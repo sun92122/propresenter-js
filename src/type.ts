@@ -4,8 +4,8 @@
 // 2. decode: 將 RTF 二進制轉為純文字
 // in: Uint8Array, out: ProFormat
 
-import { type UUID } from "crypto";
-import * as ProPresenter from "./propresenter";
+import { randomUUID, type UUID } from "node:crypto";
+import * as ProPresenter from "./propresenter.js";
 
 type PresentationType = typeof ProPresenter.rv.data.Presentation.prototype;
 type CueType = typeof ProPresenter.rv.data.Cue.prototype;
@@ -93,7 +93,7 @@ interface ProFormat {
 
 export function generateUUID(): UUID {
   // 生成一個隨機的 UUID（版本 4）
-  return crypto.randomUUID() as UUID;
+  return randomUUID() as UUID;
 }
 
 export type {

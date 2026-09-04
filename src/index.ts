@@ -11,9 +11,9 @@ import type {
   Element,
   Slide,
   UUID,
-} from "./type";
+} from "./type.js";
 
-import { generateUUID } from "./type";
+import { generateUUID } from "./type.js";
 
 import {
   ProFormatToPresentation,
@@ -25,7 +25,9 @@ import {
   editSelectedArrangement,
   editArrangements,
   editGroups,
-} from "./utils/ProFormatter";
+} from "./utils/ProFormatter.js";
+
+import RtfHelper from "./utils/RtfHelper.js";
 
 export default class ProFileProcessor {
   presentation: PresentationType | null;
@@ -75,11 +77,14 @@ export {
   ProFormatToPresentation,
   ProFormatUpdatePresentation,
   PresentationToProFormat,
+  PresentationToWriter,
   editName,
   editNote,
   editSelectedArrangement,
   editArrangements,
+  editGroups,
   generateUUID,
+  RtfHelper,
 };
 
-export type { ProFormat, Group, Arrangement, Element, Slide, UUID };
+export type { PresentationType, ProFormat, Group, Arrangement, Element, Slide, UUID };

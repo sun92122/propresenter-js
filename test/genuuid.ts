@@ -1,4 +1,4 @@
-import { generateUUID } from "../src/type";
+import { generateUUID } from "../src/type.js";
 
 const parm1 = process.argv.slice(2)[0];
 try {

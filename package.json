@@ -1,21 +1,41 @@
 {
   "name": "propresenter-js",
   "version": "1.0.0",
-  "description": "A JavaScript library for working with ProPresenter data.",
+  "description": "A JavaScript/TypeScript library for working with ProPresenter data.",
   "license": "MIT",
   "author": "magical <sun920122@gmail.com>",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "propresenter",
-    "protobuf"
+    "protobuf",
+    "rtf",
+    "presentation"
   ],
   "scripts": {
-    "gen": "pbjs -t static-module -w commonjs --dts -o src/propresenter.js ./proto/presentation.proto",
+    "build": "rm -rf dist && tsc && cp src/propresenter.js src/propresenter.d.ts dist/",
+    "prepublishOnly": "npm run build",
+    "gen": "pbjs -t static-module -w esm --dts -o src/propresenter.js ./proto/presentation.proto",
     "gen:template": "tsx src/tools/generateTemplate.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tsx test/decode.ts && tsx test/encode.ts"
   },
   "dependencies": {
+    "long": "^5.3.2",
     "protobufjs": "^8.8.0"
   },
   "devDependencies": {

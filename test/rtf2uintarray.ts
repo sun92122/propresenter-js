@@ -1,6 +1,8 @@
 // read rtf text from ./temp.rtf and output to stdout as Uint8Array
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
+
+const __dirname = import.meta.dirname;
 
 function main() {
   const rtfPath = path.resolve(__dirname, "./temp.rtf");

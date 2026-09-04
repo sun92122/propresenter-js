@@ -1,4 +1,6 @@
-import * as ProPresenter from "../propresenter";
+import { Buffer } from "node:buffer";
+import type { Writer } from "protobufjs";
+import * as ProPresenter from "../propresenter.js";
 import type {
   PresentationType,
   CueType,
@@ -9,10 +11,10 @@ import type {
   Element,
   Slide,
   UUID,
-} from "../type";
-import { generateUUID } from "../type";
+} from "../type.js";
+import { generateUUID } from "../type.js";
 
-import { templateBase64 } from "../template";
+import { templateBase64 } from "../template.js";
 
 const Presentation = ProPresenter.rv.data.Presentation;
 const Cue = ProPresenter.rv.data.Cue;
@@ -244,7 +246,7 @@ function PresentationToProFormat(presentation: PresentationType): ProFormat {
   return proFormat;
 }
 
-function PresentationToWriter(presentation: PresentationType): protobuf.Writer {
+function PresentationToWriter(presentation: PresentationType): Writer {
   const writer = Presentation.encode(presentation);
   return writer;
 }
@@ -260,28 +262,3 @@ export {
   editArrangements,
   editGroups,
 };
-
-function test() {
-  const test = ProFormatToPresentation({
-    name: "Test Presentation",
-    note: "This is a test presentation",
-    selectedArrangement: {
-      name: "Arrangement 1",
-      uuid: generateUUID(),
-    },
-    arrangements: [
-      {
-        name: "Arrangement 1",
-        uuid: generateUUID(),
-      },
-    ],
-  } as ProFormat);
-  const fs = require("fs");
-  const path = require("path");
-  // save the test presentation to a binary file
-  const binaryPath = path.resolve(__dirname, "temp.pro");
-  fs.writeFileSync(binaryPath, Presentation.encode(test).finish());
-  console.log(`已將測試 Presentation 儲存至: ${binaryPath}`);
-}
-
-test();

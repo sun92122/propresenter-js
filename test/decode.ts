@@ -1,9 +1,10 @@
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
-import * as ProPresenter from "../src/propresenter";
-import RtfHelper from "../src/utils/RtfHelper";
+import * as ProPresenter from "../src/propresenter.js";
+import RtfHelper from "../src/utils/RtfHelper.js";
 
+const __dirname = import.meta.dirname;
 const { Presentation } = ProPresenter.rv.data;
 
 async function main() {

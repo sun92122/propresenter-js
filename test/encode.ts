@@ -1,5 +1,8 @@
-import ProFileProcessor from "../src/index";
-import { type ProFormat } from "../src/index";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import ProFileProcessor, { type ProFormat } from "../src/index.js";
+
+const __dirname = import.meta.dirname;
 
 async function testEncode() {
   const args = process.argv.slice(2);
@@ -8,12 +11,12 @@ async function testEncode() {
   const file = param1?.endsWith(".json")
     ? param1
     : (param1 || "test") + ".json";
-  const jsonPath = require("path").resolve(__dirname, file);
-  if (!require("fs").existsSync(jsonPath)) {
+  const jsonPath = path.resolve(__dirname, file);
+  if (!fs.existsSync(jsonPath)) {
     console.error(`檔案不存在: ${jsonPath}`);
     process.exit(1);
   }
-  const jsonData = require(jsonPath);
+  const jsonData = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
   const proFormat = jsonData as ProFormat;
 
   const processor = new ProFileProcessor();
@@ -29,17 +32,17 @@ async function testEncode() {
     console.error("無法取得二進制緩衝區");
     process.exit(1);
   }
-  const binaryPath = require("path").resolve(
+  const binaryPath = path.resolve(
     __dirname,
     "encoded_out",
     proFormat.name + ".pro",
   );
   // check if the directory exists, if not, create it
-  const dirPath = require("path").dirname(binaryPath);
-  if (!require("fs").existsSync(dirPath)) {
-    require("fs").mkdirSync(dirPath, { recursive: true });
+  const dirPath = path.dirname(binaryPath);
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
   }
-  require("fs").writeFileSync(binaryPath, binaryBuffer);
+  fs.writeFileSync(binaryPath, binaryBuffer);
   console.log(`已將 ProFormat 編碼為二進制檔案: ${binaryPath}`);
 }
 
