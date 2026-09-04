@@ -1,17 +1,18 @@
 {
   "name": "propresenter-js",
   "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "commonjs",
-  "main": "main.ts",
-  "directories": {
-    "test": "test"
-  },
+  "description": "A JavaScript library for working with ProPresenter data.",
+  "license": "MIT",
+  "author": "magical <sun920122@gmail.com>",
+  "type": "module",
+  "main": "src/index.ts",
+  "keywords": [
+    "propresenter",
+    "protobuf"
+  ],
   "scripts": {
-    "gen": "npx pbjs -t static-module -w esm --dts -o propresenter.js ./proto/presentation.proto",
-    "gen:template": "npx tsx src/tools/generateTemplate.ts",
+    "gen": "pbjs -t static-module -w commonjs --dts -o src/propresenter.js ./proto/presentation.proto",
+    "gen:template": "tsx src/tools/generateTemplate.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

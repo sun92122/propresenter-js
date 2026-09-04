@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 import * as ProPresenter from "../src/propresenter";
-import { RtfHelper } from "../src/utils/RtfHelper";
+import RtfHelper from "../src/utils/RtfHelper";
 
 const { Presentation } = ProPresenter.rv.data;
 
@@ -62,7 +62,11 @@ async function main() {
         const rtf = elementTemp?.text?.rtfData || new Uint8Array();
         const rtfString = new TextDecoder("utf-8").decode(rtf);
         const text = RtfHelper.parse(rtfString);
-        console.log(`元素: ${name}\n`, `文字: ${JSON.stringify(text)}\n`);
+        console.log(
+          `元素: ${name}\n`,
+          `RTF: ${JSON.stringify(rtfString)}\n`,
+          `文字: ${JSON.stringify(text)}\n`,
+        );
       }
     }
   }
