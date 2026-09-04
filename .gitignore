@@ -196,4 +196,8 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node,macos
 
 
+
+# test file
 temp.*
+test/decoded_out/
+test/encoded_out/

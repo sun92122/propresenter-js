@@ -11,6 +11,7 @@
   },
   "scripts": {
     "gen": "npx pbjs -t static-module -w esm --dts -o propresenter.js ./proto/presentation.proto",
+    "gen:template": "npx tsx src/tools/generateTemplate.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
