@@ -16,6 +16,7 @@ async function testEncode() {
     console.error(`檔案不存在: ${jsonPath}`);
     process.exit(1);
   }
+  console.log(`讀取 JSON 檔案: ${jsonPath}`);
   const jsonData = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
   const proFormat = jsonData as ProFormat;
 

@@ -56,6 +56,12 @@ enum Hotkey {
   Z,
 }
 
+enum VerticalAlignment {
+  Top = 0,
+  Middle = 1,
+  Bottom = 2,
+}
+
 interface Group {
   name: string;
   uuid: UUID;
@@ -73,6 +79,7 @@ interface Arrangement {
 interface Element {
   name: string;
   textRtf: Uint8Array;
+  align?: VerticalAlignment;
   bounds?: Bounds;
 }
 

@@ -29,8 +29,11 @@ function newPresentation(): PresentationType {
   return Presentation.decode(templateBinary);
 }
 
-function newCue(): CueType {
-  return Cue.decode(Cue.encode(template.cues[0]).finish());
+function newCue(uuid: UUID): CueType {
+  const cue = Cue.decode(Cue.encode(template.cues[0]).finish());
+  cue.uuid = { string: uuid };
+  cue.actions.at(0)!.uuid = { string: generateUUID() };
+  return cue;
 }
 
 function newElement(): ElementType {
@@ -39,11 +42,13 @@ function newElement(): ElementType {
   ) {
     throw new Error("Template does not have elements");
   }
-  return Element.decode(
+  const element = Element.decode(
     Element.encode(
       template.cues[0].actions[0].slide.presentation.baseSlide.elements[0],
     ).finish(),
   );
+  element.element!.uuid = { string: generateUUID() };
+  return element;
 }
 
 // parse functions
@@ -176,14 +181,19 @@ function editGroups(presentation: PresentationType, groups: Group[]): void {
 function editSlides(presentation: PresentationType, slides: Slide[]): void {
   const cues: CueType[] = [];
   for (const slide of slides) {
-    const cue = newCue();
-    cue.uuid = { string: slide.uuid };
+    const cue = newCue(slide.uuid);
     const presentationSlide = cue.actions?.[0]?.slide?.presentation;
     presentationSlide!.notes!.rtfData = slide?.noteRtf || new Uint8Array();
+    presentationSlide!.baseSlide!.uuid = { string: generateUUID() };
     presentationSlide!.baseSlide!.elements = slide.elements.map((element) => {
       const tempElement = newElement();
-      tempElement.element!.name = element.name;
+      tempElement.element!.name = element.name || "Text";
       tempElement.element!.text!.rtfData = element.textRtf || new Uint8Array();
+      if (element.align !== undefined) {
+        tempElement.element!.text!.verticalAlignment = element.align as number;
+      } else {
+        tempElement.element!.text!.verticalAlignment = 1; // default to middle alignment if not specified
+      }
       if (element.bounds) {
         tempElement.element!.bounds = {
           origin: { x: element.bounds.x, y: element.bounds.y },
@@ -191,6 +201,11 @@ function editSlides(presentation: PresentationType, slides: Slide[]): void {
             width: element.bounds.width,
             height: element.bounds.height,
           },
+        };
+      } else {
+        tempElement.element!.bounds = {
+          origin: { x: 0, y: 0 },
+          size: { width: 1920, height: 1080 },
         };
       }
       return tempElement;
