@@ -4,6 +4,14 @@
   "description": "A JavaScript/TypeScript library for working with ProPresenter data.",
   "license": "MIT",
   "author": "magical <sun920122@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sun92122/propresenter-js.git"
+  },
+  "homepage": "https://github.com/sun92122/propresenter-js#readme",
+  "bugs": {
+    "url": "https://github.com/sun92122/propresenter-js/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
