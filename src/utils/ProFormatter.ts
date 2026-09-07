@@ -113,6 +113,7 @@ function getSlides(presentation: PresentationType): Slide[] {
             : undefined,
         }));
       }) as Element[]) || [],
+    label: cue.actions?.[0]?.label?.text || undefined,
   }));
 }
 
@@ -200,6 +201,9 @@ function editSlides(presentation: PresentationType, slides: Slide[]): void {
       }
       return tempElement;
     });
+    if (slide.label) {
+      cue.actions![0]!.label = { text: slide.label };
+    }
     cues.push(cue);
   }
   presentation.cues = cues;
@@ -230,6 +234,7 @@ function ProFormatUpdatePresentation(
   editSelectedArrangement(presentation, proFormat?.selectedArrangement);
   editArrangements(presentation, proFormat.arrangements || []);
   editGroups(presentation, proFormat.groups || []);
+  editSlides(presentation, proFormat.slides || []);
 }
 
 function PresentationToProFormat(presentation: PresentationType): ProFormat {

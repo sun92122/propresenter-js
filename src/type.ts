@@ -81,6 +81,7 @@ interface Slide {
   uuid: UUID;
   noteRtf?: Uint8Array;
   elements: Element[];
+  label?: string;
 }
 
 interface ProFormat {
