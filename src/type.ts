@@ -86,7 +86,7 @@ interface Slide {
 interface ProFormat {
   name: string;
   note: string;
-  selectedArrangement?: Arrangement;
+  selectedArrangement?: UUID;
   arrangements: Arrangement[];
   groups: Group[];
   slides: Slide[];

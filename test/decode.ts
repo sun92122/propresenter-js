@@ -4,6 +4,8 @@ import * as path from "node:path";
 import * as ProPresenter from "../src/propresenter.js";
 import RtfHelper from "../src/utils/RtfHelper.js";
 
+import ProFileProcessor, { type ProFormat } from "../src/index.js";
+
 const __dirname = import.meta.dirname;
 const { Presentation } = ProPresenter.rv.data;
 
@@ -22,55 +24,42 @@ async function main() {
   }
   const binaryBuffer = fs.readFileSync(binaryPath);
   const presentation = Presentation.decode(binaryBuffer);
-  console.error("解析成功:", presentation);
+  console.error("解析成功");
 
-  console.log(
-    `\n---------------------------\nPresentation: ${presentation.name}`,
-  );
-  console.log(`Cues: ${presentation.cues.length}`);
-  console.log(`Notes: ${presentation.notes}`);
-  console.log(`Category: ${presentation.category}`);
-  console.log(
-    `Arrangement selected: ${presentation.selectedArrangement?.string || "無"}`,
-  );
-  for (const arrangement of presentation.arrangements) {
-    console.log(
-      `Arrangement: ${arrangement.name}, uuid: ${arrangement.uuid?.string}`,
-    );
+  const processor = new ProFileProcessor();
+  processor.setPresentation(presentation);
+  const proFormat = processor.getProFormat();
+  if (!proFormat) {
+    console.error("無法取得 ProFormat");
+    process.exit(1);
   }
 
-  for (const group of presentation.cueGroups) {
-    console.log(
-      `\n---------------------------\nCueGroup: ${group.group?.applicationGroupIdentifier?.string}, ${group.group?.applicationGroupName}, ${group.group?.color?.alpha}, ${group.group?.color?.red}, ${group.group?.color?.green}, ${group.group?.color?.blue}, ${group.group?.uuid?.string}, ${group.group?.hotKey?.code}, ${group.group?.hotKey?.controlIdentifier}, ${group.group?.name}`,
-    );
-    group.cueIdentifiers?.forEach((cueId) => {
-      console.log(`Cue Identifier: ${cueId.string}`);
-    });
+  const jsonPath = path.resolve(
+    __dirname,
+    "decoded_out",
+    proFormat.name + ".json",
+  );
+  // check if the directory exists, if not, create it
+  const dirPath = path.dirname(jsonPath);
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
   }
 
-  for (const cue of presentation.cues) {
-    if (!cue.actions) {
-      console.log(`\n---------------------------\nCue ${cue.name} 沒有動作`);
-      continue;
-    }
-    console.log(`\n---------------------------\nCue ${cue.name}:`);
-    for (const action of cue.actions) {
-      console.log(`動作: ${action.uuid?.string}, 類型: ${action.type}`);
-      for (const element of action.slide?.presentation?.baseSlide?.elements ||
-        []) {
-        const elementTemp = element.element;
-        const name = elementTemp?.name || "無名稱";
-        const rtf = elementTemp?.text?.rtfData || new Uint8Array();
-        const rtfString = new TextDecoder("utf-8").decode(rtf);
-        const text = RtfHelper.parse(rtfString);
+  const proFormatCopy: any = JSON.parse(JSON.stringify(proFormat));
+
+  for (const slide of proFormatCopy?.slides) {
+    for (const element of slide?.elements) {
+      if (element.textRtf) {
         console.log(
-          `元素: ${name}\n`,
-          `RTF: ${JSON.stringify(rtfString)}\n`,
-          `文字: ${JSON.stringify(text)}\n`,
+          `解析 slide: ${slide.uuid}, element: ${element.name}, textRtf: ${element.textRtf.data}`,
         );
+        element.textRtf = RtfHelper.parse(element.textRtf.data as Uint8Array);
       }
     }
   }
+
+  fs.writeFileSync(jsonPath, JSON.stringify(proFormatCopy, null, 2));
+  console.log(`已將二進制檔案解碼為 ProFormat JSON 檔案: ${jsonPath}`);
 }
 
 main().catch((err) => {

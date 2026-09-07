@@ -55,33 +55,18 @@ function newElement(): ElementType {
 
 function getSelectedArrangement(
   presentation: PresentationType,
-): Arrangement | undefined {
-  if (!presentation.selectedArrangement) {
-    return undefined;
-  }
-  const selectedUuid = presentation.selectedArrangement.string;
-  const selectedArrangement = presentation.arrangements.find(
-    (arrangement) => arrangement.uuid?.string === selectedUuid,
-  );
-  if (
-    !selectedArrangement ||
-    !selectedArrangement.name ||
-    !selectedArrangement.uuid
-  ) {
-    return undefined;
-  }
-  return {
-    name: selectedArrangement.name,
-    uuid: (selectedArrangement.uuid?.string || generateUUID()) as UUID,
-    groupUuids: [], // get groupUuids from presentation.arrangements if needed
-  };
+): UUID | undefined {
+  return presentation.selectedArrangement?.string as UUID | undefined;
 }
 
 function getArrangements(presentation: PresentationType): Arrangement[] {
   return presentation.arrangements.map((arrangement) => ({
     name: arrangement.name || "",
     uuid: (arrangement.uuid?.string || generateUUID()) as UUID,
-    groupUuids: (arrangement.groupIdentifiers as UUID[]) || [],
+    groupUuids:
+      (arrangement.groupIdentifiers?.map(
+        (groupId) => groupId.string,
+      ) as UUID[]) || [],
   }));
 }
 
@@ -143,8 +128,12 @@ function editNote(presentation: PresentationType, newNote: string): void {
 
 function editSelectedArrangement(
   presentation: PresentationType,
-  arrangementUuid: UUID,
+  arrangementUuid?: UUID,
 ): void {
+  if (!arrangementUuid) {
+    presentation.selectedArrangement = undefined;
+    return;
+  }
   presentation.selectedArrangement = { string: arrangementUuid };
 }
 
@@ -159,6 +148,7 @@ function editArrangements(
   presentation.arrangements = arrangements.map((arrangement) => ({
     name: arrangement.name,
     uuid: { string: arrangement.uuid },
+    groupIdentifiers: arrangement.groupUuids.map((uuid) => ({ string: uuid })),
   }));
 }
 
@@ -222,9 +212,7 @@ function ProFormatToPresentation(proFormat: ProFormat): PresentationType {
   // metadata
   editName(presentation, proFormat.name);
   editNote(presentation, proFormat.note);
-  if (proFormat.selectedArrangement?.uuid) {
-    editSelectedArrangement(presentation, proFormat.selectedArrangement?.uuid);
-  }
+  editSelectedArrangement(presentation, proFormat?.selectedArrangement);
   editArrangements(presentation, proFormat.arrangements || []);
   editGroups(presentation, proFormat.groups || []);
   // slides
@@ -239,9 +227,7 @@ function ProFormatUpdatePresentation(
 ): void {
   editName(presentation, proFormat.name);
   editNote(presentation, proFormat.note);
-  if (proFormat.selectedArrangement?.uuid) {
-    editSelectedArrangement(presentation, proFormat.selectedArrangement?.uuid);
-  }
+  editSelectedArrangement(presentation, proFormat?.selectedArrangement);
   editArrangements(presentation, proFormat.arrangements || []);
   editGroups(presentation, proFormat.groups || []);
 }
